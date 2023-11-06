@@ -1,27 +1,22 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:login1/registration.dart';
-import 'homescreen.dart';
+import 'package:login1/signinpage.dart';
 
-class SignInPage extends StatefulWidget {
-  const SignInPage({super.key});
+class RegistrationPage extends StatefulWidget {
+  const RegistrationPage({super.key});
 
   @override
-  _SignInPageState createState() => _SignInPageState();
+  _RegistrationPageState createState() => _RegistrationPageState();
 }
 
-class _SignInPageState extends State<SignInPage> {
+class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  Future<User?> signInWithEmailAndPassword(
-      String email, String password) async {
+  Future<User?> registerWithEmailAndPassword(String email, String password) async {
     try {
-      UserCredential userCredential =
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
       print('Firebase Authentication Error: ${e.message}');
@@ -29,18 +24,18 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  void _verifyCredentials() async {
+  void _performRegistration() async {
     String email = _emailController.text;
     String password = _passwordController.text;
 
-    User? user = await signInWithEmailAndPassword(email, password);
+    User? user = await registerWithEmailAndPassword(email, password);
 
     if (user != null) {
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => HomeScreen()));
+          context, MaterialPageRoute(builder: (context) => SignInPage()));
     } else {
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Authentication failed')));
+          .showSnackBar(const SnackBar(content: Text('Registration failed')));
     }
   }
 
@@ -48,7 +43,7 @@ class _SignInPageState extends State<SignInPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sign In'),
+        title: const Text('Registration'),
       ),
       body: Center(
         child: Padding(
@@ -66,16 +61,8 @@ class _SignInPageState extends State<SignInPage> {
                 obscureText: true,
               ),
               ElevatedButton(
-                onPressed: _verifyCredentials,
-                child: const Text('Sign In'),
-              ),
-              SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: (){
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => RegistrationPage()));
-                },
-                child: const Text('Create Account'),
+                onPressed: _performRegistration,
+                child: const Text('Register'),
               ),
             ],
           ),
